@@ -35,11 +35,16 @@ if [ "x$DISTRO" == "xrhel" ]; then
     SALT_REPO=https://repo.saltstack.com/yum/redhat/7/x86_64/archive/2015.8.11
     SALT_REPO_KEY=https://repo.saltstack.com/yum/redhat/7/x86_64/archive/2015.8.11/SALTSTACK-GPG-KEY.pub
     SALT_REPO_KEY2=http://repo.saltstack.com/yum/redhat/7/x86_64/2015.8/base/RPM-GPG-KEY-CentOS-7
+    NODE_REPO=https://rpm.nodesource.com/pub_6.x/el/7/x86_64/nodesource-release-el7-1.noarch.rpm
 
     RPM_PACKAGE_LIST=$(<pnda-rpm-package-dependencies.txt)
 
     yum install -y $RPM_EPEL
     yum-config-manager --enable $RPM_EXTRAS $RPM_OPTIONAL
+
+    RPM_TMP=$(mktemp || bail)
+    wget -O ${RPM_TMP} ${NODE_REPO}
+    rpm -i --nosignature --force ${RPM_TMP}
 
     yum-config-manager --add-repo $MY_SQL_REPO
     rpm --import $MY_SQL_REPO_KEY
@@ -80,6 +85,9 @@ EOF
     deb [arch=amd64] http://repo.saltstack.com/apt/ubuntu/14.04/amd64/archive/2015.8.11/ trusty main
 EOF
     wget -O - 'http://repo.saltstack.com/apt/ubuntu/14.04/amd64/archive/2015.8.11/SALTSTACK-GPG-KEY.pub' | apt-key add -
+
+    echo 'deb [arch=amd64] https://deb.nodesource.com/node_6.x trusty main' > /etc/apt/sources.list.d/nodesource.list
+    wget -O - 'https://deb.nodesource.com/gpgkey/nodesource.gpg.key' | apt-key add -
 
     apt-get -y update
     apt-get -y install dpkg-dev debfoster rng-tools
