@@ -36,6 +36,7 @@ if [ "x$DISTRO" == "xrhel" ]; then
     SALT_REPO_KEY=https://repo.saltstack.com/yum/redhat/7/x86_64/archive/2015.8.11/SALTSTACK-GPG-KEY.pub
     SALT_REPO_KEY2=http://repo.saltstack.com/yum/redhat/7/x86_64/2015.8/base/RPM-GPG-KEY-CentOS-7
     NODE_REPO=https://rpm.nodesource.com/pub_6.x/el/7/x86_64/nodesource-release-el7-1.noarch.rpm
+    NODE_REPO_KEY=https://rpm.nodesource.com/pub/el/NODESOURCE-GPG-SIGNING-KEY-EL
 
     RPM_PACKAGE_LIST=$(<pnda-rpm-package-dependencies.txt)
 
@@ -47,11 +48,8 @@ if [ "x$DISTRO" == "xrhel" ]; then
     rpm -i --nosignature --force ${RPM_TMP}
 
     yum-config-manager --add-repo $MY_SQL_REPO
-    rpm --import $MY_SQL_REPO_KEY
     yum-config-manager --add-repo $CLOUDERA_MANAGER_REPO
-    rpm --import $CLOUDERA_MANAGER_REPO_KEY
     yum-config-manager --add-repo $SALT_REPO
-    rpm --import $SALT_REPO_KEY
 
     yum install -y createrepo
     rm -rf $RPM_REPO_DIR
@@ -63,6 +61,7 @@ if [ "x$DISTRO" == "xrhel" ]; then
     curl https://dl.fedoraproject.org/pub/epel/RPM-GPG-KEY-EPEL-7 > $RPM_REPO_DIR/RPM-GPG-KEY-EPEL-7
     curl $SALT_REPO_KEY > $RPM_REPO_DIR/SALTSTACK-GPG-KEY.pub
     curl $SALT_REPO_KEY2 > $RPM_REPO_DIR/RPM-GPG-KEY-CentOS-7
+    curl ${NODE_REPO_KEY} > $RPM_REPO_DIR/NODESOURCE-GPG-SIGNING-KEY-EL
 
     #TODO yumdownloader doesn't always seem to download the full set of packages, for instance if git is installed, it won't download perl
     # packages correctly maybe because git already installed them. repotrack is meant to be better but I couldn't get that working.
